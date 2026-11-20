@@ -28,6 +28,7 @@
 #include "pyCollision.hh"
 #include "pyCone.hh"
 #include "pyConvexDecomposition.hh"
+#include "pyCustomInertiaCalcProperties.hh"
 #include "pyCylinder.hh"
 #include "pyElement.hh"
 #include "pyEllipsoid.hh"
@@ -90,6 +91,7 @@ PYBIND11_MODULE(BINDINGS_MODULE_NAME, m) {
   sdf::python::defineCone(m);
   sdf::python::defineConvexDecomposition(m);
   sdf::python::defineContact(m);
+  sdf::python::defineCustomInertiaCalcProperties(m);
   sdf::python::defineCylinder(m);
   // PrintConfig has to be defined before Param and Element because it's used as
   // a default argument.

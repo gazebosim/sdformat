@@ -13,7 +13,10 @@
 # limitations under the License.
 
 import copy
-from sdformat import ParserConfig
+from gz.math import Inertiald, MassMatrix3d, Pose3d, Vector3d
+from sdformat import (CalculateInertialFailurePolicyType,
+                      CustomInertiaCalcProperties, Error, ErrorCode,
+                      ParserConfig)
 from sdformattest import source_file, test_file
 import unittest
 
@@ -40,6 +43,74 @@ class ParserConfigColor(unittest.TestCase):
         config.set_find_callback(testFunc)
         self.assertTrue(config.find_file_callback())
         self.assertEqual("test/dir2", config.find_file_callback()("empty"))
+
+
+    def test_custom_inertia_calc(self):
+        config = ParserConfig()
+        self.assertIsNone(config.custom_inertia_calc())
+
+        def calculator(errors, props):
+            if props.density() <= 0:
+                errors.append(
+                    Error(ErrorCode.LINK_INERTIA_INVALID, "Inertia is invalid"))
+                return None
+            return Inertiald(
+                MassMatrix3d(props.density(), Vector3d.ONE, Vector3d.ZERO),
+                Pose3d.ZERO)
+
+        config.register_custom_inertia_calc(calculator)
+        registered_calculator = config.custom_inertia_calc()
+        self.assertIsNotNone(registered_calculator)
+
+        props = CustomInertiaCalcProperties()
+        props.set_density(2.0)
+        errors = []
+        inertial = registered_calculator(errors, props)
+        self.assertFalse(errors)
+        self.assertEqual(2.0, inertial.mass_matrix().mass())
+
+        # Errors appended by the calculator are returned in the list
+        props.set_density(0.0)
+        inertial = registered_calculator(errors, props)
+        self.assertIsNone(inertial)
+        self.assertEqual(1, len(errors))
+        self.assertEqual(ErrorCode.LINK_INERTIA_INVALID, errors[0].code())
+
+        # Copies keep the registered calculator
+        for config_copy in [ParserConfig(config), copy.copy(config),
+                            copy.deepcopy(config)]:
+            self.assertIsNotNone(config_copy.custom_inertia_calc())
+
+
+    def test_custom_inertia_calc_invalid_error(self):
+        config = ParserConfig()
+
+        def calculator(errors, props):
+            errors.append("not an sdformat.Error")
+            return None
+
+        config.register_custom_inertia_calc(calculator)
+        with self.assertRaises(TypeError):
+            config.custom_inertia_calc()([], CustomInertiaCalcProperties())
+
+
+    def test_calculate_inertial_failure_policy(self):
+        config = ParserConfig()
+        self.assertEqual(CalculateInertialFailurePolicyType.ERR,
+                         config.calculate_inertial_failure_policy())
+
+        config.set_calculate_inertial_failure_policy(
+            CalculateInertialFailurePolicyType.WARN_AND_USE_DEFAULT_INERTIAL)
+        self.assertEqual(
+            CalculateInertialFailurePolicyType.WARN_AND_USE_DEFAULT_INERTIAL,
+            config.calculate_inertial_failure_policy())
+
+        # Copies keep the policy
+        for config_copy in [ParserConfig(config), copy.copy(config),
+                            copy.deepcopy(config)]:
+            self.assertEqual(
+                CalculateInertialFailurePolicyType.WARN_AND_USE_DEFAULT_INERTIAL,
+                config_copy.calculate_inertial_failure_policy())
 
 
     def test_copy_construction(self):

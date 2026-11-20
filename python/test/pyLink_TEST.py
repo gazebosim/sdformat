@@ -13,9 +13,10 @@
 # limitations under the License.
 
 import copy
-from gz.math import Pose3d, Inertiald, MassMatrix3d, Vector3d
-from sdformat import (Collision, Light, Link, ParserConfig, Projector, Sensor,
-                      Visual, Root, SDFErrorsException)
+from gz.math import Pose3d, Inertiald, MassMatrix3d, Material, Vector3d
+from sdformat import (Collision, ConfigureResolveAutoInertials, Element,
+                      Light, Link, ParserConfig, Projector, Sensor, Visual,
+                      Root, SDFErrorsException)
 import unittest
 import math
 
@@ -709,6 +710,212 @@ class LinkTEST(unittest.TestCase):
         self.assertEqual(1.0, link.inertial().mass_matrix().mass())
         self.assertEqual(Vector3d.ONE,
             link.inertial().mass_matrix().diagonal_moments())
+
+    def test_density_and_auto_inertia_params(self):
+        link = Link()
+        self.assertIsNone(link.density())
+        self.assertIsNone(link.auto_inertia_params())
+
+        link.set_density(2.0)
+        self.assertEqual(2.0, link.density())
+
+        params = Element()
+        params.set_name("auto_inertia_params")
+        link.set_auto_inertia_params(params)
+        self.assertEqual("auto_inertia_params",
+                         link.auto_inertia_params().get_name())
+
+        sdf = "<?xml version=\"1.0\"?>" + \
+        "<sdf version=\"1.11\">" + \
+        "  <model name='shapes'>" + \
+        "    <link name='link'>" + \
+        "      <inertial auto='true'>" + \
+        "        <density>12.0</density>" + \
+        "        <auto_inertia_params>" + \
+        "          <gz:box_size>1 1 1</gz:box_size>" + \
+        "        </auto_inertia_params>" + \
+        "      </inertial>" + \
+        "      <collision name='box_collision'>" + \
+        "        <geometry>" + \
+        "          <box>" + \
+        "            <size>1 1 1</size>" + \
+        "          </box>" + \
+        "        </geometry>" + \
+        "      </collision>" + \
+        "    </link>" + \
+        "  </model>" + \
+        "</sdf>"
+
+        root = Root()
+        errors = root.load_sdf_string(sdf, ParserConfig())
+        self.assertEqual(None, errors)
+
+        link = root.model().link_by_index(0)
+        self.assertEqual(12.0, link.density())
+        self.assertTrue(link.auto_inertia_params().has_element("gz:box_size"))
+
+    def test_resolve_auto_inertials_with_link_density(self):
+        # The collision has no density, so the link density is used
+        sdf = "<?xml version=\"1.0\"?>" + \
+        "<sdf version=\"1.11\">" + \
+        "  <model name='shapes'>" + \
+        "    <link name='link'>" + \
+        "      <inertial auto='true'>" + \
+        "        <density>2.0</density>" + \
+        "      </inertial>" + \
+        "      <collision name='box_collision'>" + \
+        "        <geometry>" + \
+        "          <box>" + \
+        "            <size>1 2 3</size>" + \
+        "          </box>" + \
+        "        </geometry>" + \
+        "      </collision>" + \
+        "    </link>" + \
+        "  </model>" + \
+        "</sdf>"
+
+        root = Root()
+        sdfParserConfig = ParserConfig()
+        sdfParserConfig.set_calculate_inertial_configuration(
+            ConfigureResolveAutoInertials.SKIP_CALCULATION_IN_LOAD)
+        errors = root.load_sdf_string(sdf, sdfParserConfig)
+        self.assertEqual(None, errors)
+
+        link = root.model().link_by_index(0)
+        # Default Inertial values set during load
+        self.assertEqual(1.0, link.inertial().mass_matrix().mass())
+
+        errors = []
+        link.resolve_auto_inertials(errors, sdfParserConfig)
+        self.assertEqual(len(errors), 0)
+        # 1 x 2 x 3 box with a density of 2
+        self.assertEqual(12.0, link.inertial().mass_matrix().mass())
+
+    def test_resolve_auto_inertials_with_custom_calculator(self):
+        sdf = "<?xml version=\"1.0\"?>" + \
+        "<sdf version=\"1.11\">" + \
+        "  <model name='multilink_model'>" + \
+        "    <link name='link_auto_inertia_params'>" + \
+        "      <inertial auto='true'>" + \
+        "        <auto_inertia_params>" + \
+        "          <gz:density>12</gz:density>" + \
+        "          <gz:box_size>1 1 1</gz:box_size>" + \
+        "        </auto_inertia_params>" + \
+        "      </inertial>" + \
+        "      <collision name='mesh_collision'>" + \
+        "        <geometry>" + \
+        "          <mesh>" + \
+        "            <uri>mesh_uri</uri>" + \
+        "          </mesh>" + \
+        "        </geometry>" + \
+        "      </collision>" + \
+        "    </link>" + \
+        "    <link name='collision_auto_inertia_params'>" + \
+        "      <inertial auto='true'/>" + \
+        "      <collision name='mesh_collision'>" + \
+        "        <auto_inertia_params>" + \
+        "          <gz:density>24</gz:density>" + \
+        "          <gz:box_size>1 1 1</gz:box_size>" + \
+        "        </auto_inertia_params>" + \
+        "        <geometry>" + \
+        "          <mesh>" + \
+        "            <uri>mesh_uri</uri>" + \
+        "          </mesh>" + \
+        "        </geometry>" + \
+        "      </collision>" + \
+        "    </link>" + \
+        "  </model>" + \
+        "</sdf>"
+
+        mesh_uris = []
+
+        def custom_mesh_inertia_calculator(errors, props):
+            mesh_uris.append(props.mesh().uri())
+            params = props.auto_inertia_params()
+            density = params.get_double("gz:density")
+            box_size = params.get_vector3("gz:box_size")
+
+            mass_matrix = MassMatrix3d()
+            mass_matrix.set_from_box(Material(density), box_size)
+            inertial = Inertiald()
+            inertial.set_mass_matrix(mass_matrix)
+            return inertial
+
+        root = Root()
+        sdfParserConfig = ParserConfig()
+        sdfParserConfig.register_custom_inertia_calc(
+            custom_mesh_inertia_calculator)
+        errors = root.load_sdf_string(sdf, sdfParserConfig)
+        self.assertEqual(None, errors)
+        self.assertEqual(["mesh_uri", "mesh_uri"], mesh_uris)
+
+        model = root.model()
+        # Box is 1 m^3, so the expected mass equals the density
+        link = model.link_by_name("link_auto_inertia_params")
+        self.assertEqual(12.0, link.inertial().mass_matrix().mass())
+        self.assertEqual(Vector3d(2, 2, 2),
+            link.inertial().mass_matrix().diagonal_moments())
+
+        link = model.link_by_name("collision_auto_inertia_params")
+        self.assertEqual(24.0, link.inertial().mass_matrix().mass())
+        self.assertEqual(Vector3d(4, 4, 4),
+            link.inertial().mass_matrix().diagonal_moments())
+
+    def test_resolve_auto_inertials_save_calculation_in_element(self):
+        sdf = "<?xml version=\"1.0\"?>" + \
+        "<sdf version=\"1.11\">" + \
+        "  <model name='shapes'>" + \
+        "    <link name='link'>" + \
+        "      <inertial auto='true'>" + \
+        "        <density>2.0</density>" + \
+        "        <auto_inertia_params/>" + \
+        "      </inertial>" + \
+        "      <collision name='box_collision'>" + \
+        "        <geometry>" + \
+        "          <box>" + \
+        "            <size>1 2 3</size>" + \
+        "          </box>" + \
+        "        </geometry>" + \
+        "      </collision>" + \
+        "    </link>" + \
+        "  </model>" + \
+        "</sdf>"
+
+        # The calculated values are only written to the //link/inertial
+        # element with SAVE_CALCULATION_IN_ELEMENT
+        for configuration, saved_in_element in [
+                (ConfigureResolveAutoInertials.SAVE_CALCULATION, False),
+                (ConfigureResolveAutoInertials.SAVE_CALCULATION_IN_ELEMENT,
+                 True)]:
+            root = Root()
+            sdfParserConfig = ParserConfig()
+            sdfParserConfig.set_calculate_inertial_configuration(
+                configuration)
+            self.assertEqual(
+                configuration,
+                sdfParserConfig.calculate_inertial_configuration())
+            errors = root.load_sdf_string(sdf, sdfParserConfig)
+            self.assertEqual(None, errors)
+
+            link = root.model().link_by_index(0)
+            self.assertTrue(link.auto_inertia_saved())
+            # 1 x 2 x 3 box with a density of 2
+            self.assertEqual(12.0, link.inertial().mass_matrix().mass())
+
+            # <auto_inertia_params> is a child of the //link/inertial element
+            inertial_elem = link.auto_inertia_params().get_parent()
+            self.assertEqual("inertial", inertial_elem.get_name())
+            self.assertEqual(saved_in_element,
+                             inertial_elem.has_element("mass"))
+            self.assertEqual(saved_in_element,
+                             inertial_elem.has_element("inertia"))
+            if saved_in_element:
+                self.assertEqual(12.0, inertial_elem.get_double("mass"))
+                inertia_elem = inertial_elem.find_element("inertia")
+                self.assertEqual(13.0, inertia_elem.get_double("ixx"))
+                self.assertEqual(10.0, inertia_elem.get_double("iyy"))
+                self.assertEqual(5.0, inertia_elem.get_double("izz"))
+                self.assertEqual(0.0, inertia_elem.get_double("ixy"))
 
 if __name__ == '__main__':
     unittest.main()

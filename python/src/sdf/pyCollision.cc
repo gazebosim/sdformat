@@ -19,8 +19,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "pybind11_helpers.hh"
 #include "sdf/Collision.hh"
 #include "sdf/Geometry.hh"
+#include "sdf/ParserConfig.hh"
 #include "sdf/Surface.hh"
 
 using namespace pybind11::literals;
@@ -38,12 +40,30 @@ void defineCollision(pybind11::object module)
   geometryModule
     .def(pybind11::init<>())
     .def(pybind11::init<sdf::Collision>())
+    .def_static("density_default", &sdf::Collision::DensityDefault,
+         "Get the default density of a collision if its density is not "
+         "specified.")
     .def("set_density", &sdf::Collision::SetDensity, "Set the density of the collision.")
     .def("density", &sdf::Collision::Density, "Get the density of the collision.")
+    .def("auto_inertia_params", &sdf::Collision::AutoInertiaParams,
+         "Get the <auto_inertia_params> element. This element can be used "
+         "as a parent element to hold user-defined params for the custom "
+         "moment of inertia calculator.")
+    .def("set_auto_inertia_params", &sdf::Collision::SetAutoInertiaParams,
+         "Set the <auto_inertia_params> element.")
     .def("calculate_inertial",
          pybind11::overload_cast<sdf::Errors &, gz::math::Inertiald &, const ParserConfig &>(
           &sdf::Collision::CalculateInertial),
          "Calculate and return the MassMatrix for the collision.")
+    .def("calculate_inertial",
+         ErrorWrappedCast<gz::math::Inertiald &, const sdf::ParserConfig &,
+                          const std::optional<double> &, sdf::ElementPtr,
+                          bool>(&sdf::Collision::CalculateInertial),
+         "inertial"_a, "config"_a, "density"_a, "auto_inertia_params"_a,
+         "warn_if_density_is_unset"_a = true,
+         "Calculate the inertial values for the collision. The density and "
+         "<auto_inertia_params> element are used if they have not been set "
+         "in this collision.")
     .def("name", &sdf::Collision::Name,
          "Get the name of the collision. "
          "The name of the collision must be unique within the scope of a Link.")

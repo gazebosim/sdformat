@@ -13,8 +13,9 @@
 # limitations under the License.
 
 import copy
-from sdformat import Mesh, ConvexDecomposition
-from gz.math import AxisAlignedBox, Vector3d
+from sdformat import (Mesh, ConvexDecomposition, Element, Error, ErrorCode,
+                      ParserConfig, SDFErrorsException)
+from gz.math import AxisAlignedBox, Inertiald, MassMatrix3d, Pose3d, Vector3d
 import sdformat as sdf
 from typing import Optional
 import unittest
@@ -189,6 +190,50 @@ class MeshTEST(unittest.TestCase):
     self.assertEqual(
       AxisAlignedBox(Vector3d(-1, -1, -1), Vector3d(1, 1, 1)),
       mesh.axis_aligned_box(mesh_aabb_calulator))
+
+  def test_calculate_inertial(self):
+    mesh = Mesh()
+    mesh.set_uri("mesh.dae")
+    auto_inertia_params = Element()
+    auto_inertia_params.set_name("auto_inertia_params")
+    config = ParserConfig()
+
+    # Default inertial values are used without a custom calculator
+    inertial = mesh.calculate_inertial(1240.0, auto_inertia_params, config)
+    self.assertEqual(1.0, inertial.mass_matrix().mass())
+    self.assertEqual(Vector3d.ONE, inertial.mass_matrix().diagonal_moments())
+
+    calculator_props = []
+
+    def custom_mesh_inertia_calculator(errors, props):
+      calculator_props.append(props)
+      if props.density() <= 0:
+        errors.append(
+          Error(ErrorCode.LINK_INERTIA_INVALID, "Inertia is invalid"))
+        return None
+
+      return Inertiald(
+        MassMatrix3d(2.0, Vector3d.ONE, Vector3d.ZERO), Pose3d.ZERO)
+
+    config.register_custom_inertia_calc(custom_mesh_inertia_calculator)
+
+    with self.assertRaises(SDFErrorsException) as context:
+      mesh.calculate_inertial(0.0, auto_inertia_params, config)
+    self.assertEqual(1, len(context.exception.errors))
+    self.assertEqual(ErrorCode.LINK_INERTIA_INVALID,
+                     context.exception.errors[0].code())
+
+    inertial = mesh.calculate_inertial(1240.0, auto_inertia_params, config)
+    self.assertEqual(2.0, inertial.mass_matrix().mass())
+    self.assertEqual(Vector3d.ONE, inertial.mass_matrix().diagonal_moments())
+
+    # The calculator receives the mesh, density and auto inertia params
+    self.assertEqual(2, len(calculator_props))
+    props = calculator_props[-1]
+    self.assertEqual(1240.0, props.density())
+    self.assertEqual("mesh.dae", props.mesh().uri())
+    self.assertEqual("auto_inertia_params",
+                     props.auto_inertia_params().get_name())
 
 
 if __name__ == '__main__':

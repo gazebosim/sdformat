@@ -16,6 +16,7 @@
 #include "pyLink.hh"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <string>
 
@@ -51,6 +52,17 @@ void defineLink(pybind11::object module)
          "Check if the inertial values for this link were saved.")
     .def("set_auto_inertia_saved", &sdf::Link::SetAutoInertiaSaved,
          "Set the autoInertiaSaved() values")
+    .def("density", &sdf::Link::Density,
+         "Get the density of the inertial if it has been set, otherwise "
+         "None.")
+    .def("set_density", &sdf::Link::SetDensity,
+         "Set the density of the inertial.")
+    .def("auto_inertia_params", &sdf::Link::AutoInertiaParams,
+         "Get the <auto_inertia_params> element. This element can be used "
+         "as a parent element to hold user-defined params for the custom "
+         "moment of inertia calculator.")
+    .def("set_auto_inertia_params", &sdf::Link::SetAutoInertiaParams,
+         "Set the <auto_inertia_params> element.")
     .def("name", &sdf::Link::Name,
          "Get the name of the link.")
     .def("set_name", &sdf::Link::SetName,
