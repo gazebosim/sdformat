@@ -49,6 +49,18 @@ void defineMesh(pybind11::object module)
          pybind11::overload_cast<const std::string &>(
            &sdf::Mesh::SetOptimization),
          "Set the mesh optimization method.")
+    .def("assert_convex", &sdf::Mesh::AssertConvex,
+         "Get how the convexity of the mesh is asserted.")
+    .def("assert_convex_str", &sdf::Mesh::AssertConvexStr,
+         "Get how the convexity of the mesh is asserted.")
+    .def("set_assert_convex",
+         pybind11::overload_cast<sdf::ConvexAssertion>(
+           &sdf::Mesh::SetAssertConvex),
+         "Set how the convexity of the mesh is asserted.")
+    .def("set_assert_convex",
+         pybind11::overload_cast<const std::string &>(
+           &sdf::Mesh::SetAssertConvex),
+         "Set how the convexity of the mesh is asserted.")
     .def("convex_decomposition", &sdf::Mesh::ConvexDecomposition,
          pybind11::return_value_policy::reference_internal,
          "Get the associated ConvexDecomposition object")
@@ -93,6 +105,12 @@ void defineMesh(pybind11::object module)
       .value("NONE", sdf::MeshOptimization::NONE)
       .value("CONVEX_HULL", sdf::MeshOptimization::CONVEX_HULL)
       .value("CONVEX_DECOMPOSITION", sdf::MeshOptimization::CONVEX_DECOMPOSITION);
+
+    pybind11::enum_<sdf::ConvexAssertion>(module, "ConvexAssertion")
+      .value("NONE", sdf::ConvexAssertion::NONE)
+      .value("NOCHECK", sdf::ConvexAssertion::NOCHECK)
+      .value("WARN", sdf::ConvexAssertion::WARN)
+      .value("FAIL", sdf::ConvexAssertion::FAIL);
 }
 }  // namespace python
 }  // namespace SDF_VERSION_NAMESPACE

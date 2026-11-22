@@ -203,6 +203,8 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ("convex_decomposition", meshColGeom->OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::CONVEX_DECOMPOSITION,
             meshColGeom->Optimization());
+  EXPECT_EQ("", meshColGeom->AssertConvexStr());
+  EXPECT_EQ(sdf::ConvexAssertion::NONE, meshColGeom->AssertConvex());
   ASSERT_NE(nullptr, meshColGeom->ConvexDecomposition());
   EXPECT_EQ(4u, meshColGeom->ConvexDecomposition()->MaxConvexHulls());
   EXPECT_EQ(400000u, meshColGeom->ConvexDecomposition()->VoxelResolution());
@@ -221,6 +223,10 @@ TEST(DOMGeometry, Shapes)
   EXPECT_EQ(sdf::GeometryType::MESH, meshVis->Geom()->Type());
   const sdf::Mesh *meshVisGeom = meshVis->Geom()->MeshShape();
   ASSERT_NE(nullptr, meshVisGeom);
+  EXPECT_EQ("convex_hull", meshVisGeom->OptimizationStr());
+  EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, meshVisGeom->Optimization());
+  EXPECT_EQ("warn", meshVisGeom->AssertConvexStr());
+  EXPECT_EQ(sdf::ConvexAssertion::WARN, meshVisGeom->AssertConvex());
   EXPECT_EQ("https://fuel.gazebosim.org/1.0/an_org/models/a_model/mesh"
       "/mesh.dae", meshVisGeom->Uri());
   EXPECT_TRUE(gz::math::Vector3d(1.2, 2.3, 3.4) ==

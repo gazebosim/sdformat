@@ -15,6 +15,9 @@
  *
 */
 #include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <gtest/gtest.h>
 #include "sdf/Mesh.hh"
@@ -23,6 +26,7 @@
 #include "sdf/CustomInertiaCalcProperties.hh"
 #include "sdf/Types.hh"
 #include "sdf/Error.hh"
+#include "sdf/parser.hh"
 
 #include <gz/math/Vector3.hh>
 #include <gz/math/MassMatrix3.hh>
@@ -36,6 +40,8 @@ TEST(DOMMesh, Construction)
 
   EXPECT_EQ(std::string(), mesh.OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::NONE, mesh.Optimization());
+  EXPECT_EQ(std::string(), mesh.AssertConvexStr());
+  EXPECT_EQ(sdf::ConvexAssertion::NONE, mesh.AssertConvex());
   EXPECT_EQ(nullptr, mesh.ConvexDecomposition());
   EXPECT_EQ(std::string(), mesh.FilePath());
   EXPECT_EQ(std::string(), mesh.Uri());
@@ -49,6 +55,7 @@ TEST(DOMMesh, MoveConstructor)
 {
   sdf::Mesh mesh;
   EXPECT_TRUE(mesh.SetOptimization("convex_decomposition"));
+  EXPECT_TRUE(mesh.SetAssertConvex("warn"));
   mesh.SetUri("banana");
   mesh.SetSubmesh("watermelon");
   mesh.SetCenterSubmesh(true);
@@ -64,6 +71,8 @@ TEST(DOMMesh, MoveConstructor)
   sdf::Mesh mesh2(std::move(mesh));
   EXPECT_EQ("convex_decomposition", mesh2.OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::CONVEX_DECOMPOSITION, mesh2.Optimization());
+  EXPECT_EQ("warn", mesh2.AssertConvexStr());
+  EXPECT_EQ(sdf::ConvexAssertion::WARN, mesh2.AssertConvex());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
   EXPECT_EQ(gz::math::Vector3d(0.5, 0.6, 0.7), mesh2.Scale());
@@ -81,6 +90,7 @@ TEST(DOMMesh, CopyConstructor)
 {
   sdf::Mesh mesh;
   EXPECT_TRUE(mesh.SetOptimization("convex_hull"));
+  EXPECT_TRUE(mesh.SetAssertConvex("nocheck"));
   mesh.SetUri("banana");
   mesh.SetSubmesh("watermelon");
   mesh.SetCenterSubmesh(true);
@@ -90,6 +100,8 @@ TEST(DOMMesh, CopyConstructor)
   sdf::Mesh mesh2(mesh);
   EXPECT_EQ("convex_hull", mesh2.OptimizationStr());
   EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh2.Optimization());
+  EXPECT_EQ("nocheck", mesh2.AssertConvexStr());
+  EXPECT_EQ(sdf::ConvexAssertion::NOCHECK, mesh2.AssertConvex());
   EXPECT_EQ(nullptr, mesh2.ConvexDecomposition());
   EXPECT_EQ("banana", mesh2.Uri());
   EXPECT_EQ("watermelon", mesh2.Submesh());
@@ -186,6 +198,31 @@ TEST(DOMMesh, Set)
     EXPECT_EQ("", mesh.OptimizationStr());
   }
 
+  EXPECT_EQ(std::string(), mesh.AssertConvexStr());
+  EXPECT_TRUE(mesh.SetAssertConvex("nocheck"));
+  EXPECT_EQ("nocheck", mesh.AssertConvexStr());
+  EXPECT_EQ(sdf::ConvexAssertion::NOCHECK, mesh.AssertConvex());
+  EXPECT_TRUE(mesh.SetAssertConvex("warn"));
+  EXPECT_EQ("warn", mesh.AssertConvexStr());
+  EXPECT_EQ(sdf::ConvexAssertion::WARN, mesh.AssertConvex());
+  EXPECT_TRUE(mesh.SetAssertConvex("error"));
+  EXPECT_EQ("error", mesh.AssertConvexStr());
+  EXPECT_EQ(sdf::ConvexAssertion::FAIL, mesh.AssertConvex());
+  mesh.SetAssertConvex(sdf::ConvexAssertion::NONE);
+  EXPECT_EQ("", mesh.AssertConvexStr());
+  EXPECT_EQ(sdf::ConvexAssertion::NONE, mesh.AssertConvex());
+  EXPECT_TRUE(mesh.SetAssertConvex(""));
+  EXPECT_EQ(sdf::ConvexAssertion::NONE, mesh.AssertConvex());
+  // check invalid inputs
+  EXPECT_FALSE(mesh.SetAssertConvex("invalid"));
+  EXPECT_EQ(sdf::ConvexAssertion::NONE, mesh.AssertConvex());
+  {
+    auto invalidAssertion = static_cast<sdf::ConvexAssertion>(99);
+    mesh.SetAssertConvex(invalidAssertion);
+    EXPECT_EQ(invalidAssertion, mesh.AssertConvex());
+    EXPECT_EQ("", mesh.AssertConvexStr());
+  }
+
   sdf::ConvexDecomposition convexDecomp;
   convexDecomp.SetMaxConvexHulls(10u);
   convexDecomp.SetVoxelResolution(200000u);
@@ -253,6 +290,68 @@ TEST(DOMMesh, Load)
   EXPECT_EQ(sdf::ErrorCode::ELEMENT_MISSING, errors[0].Code());
   EXPECT_NE(std::string::npos, errors[0].Message().find("missing a <uri>"));
   EXPECT_NE(nullptr, mesh.Element());
+}
+
+/////////////////////////////////////////////////
+TEST(DOMMesh, LoadAssertConvex)
+{
+  auto makeMeshElem = [](const std::string &_assertConvex,
+                         const std::string &_optimization)
+  {
+    sdf::ElementPtr elem(new sdf::Element);
+    sdf::initFile("mesh_shape.sdf", elem);
+    elem->GetAttribute("assert_convex")->Set<std::string>(_assertConvex);
+    elem->GetAttribute("optimization")->Set<std::string>(_optimization);
+    elem->GetElement("uri")->Set<std::string>("mesh-uri");
+    return elem;
+  };
+
+  // Valid values
+  for (const auto &[str, assertion] :
+      std::vector<std::pair<std::string, sdf::ConvexAssertion>>{
+        {"", sdf::ConvexAssertion::NONE},
+        {"nocheck", sdf::ConvexAssertion::NOCHECK},
+        {"warn", sdf::ConvexAssertion::WARN},
+        {"error", sdf::ConvexAssertion::FAIL}})
+  {
+    sdf::Mesh mesh;
+    sdf::Errors errors = mesh.Load(makeMeshElem(str, "convex_hull"));
+    EXPECT_TRUE(errors.empty()) << str << ": " << errors;
+    EXPECT_EQ(assertion, mesh.AssertConvex()) << str;
+    EXPECT_EQ(str, mesh.AssertConvexStr());
+    EXPECT_EQ(sdf::MeshOptimization::CONVEX_HULL, mesh.Optimization());
+  }
+
+  // Invalid value
+  {
+    sdf::Mesh mesh;
+    sdf::Errors errors = mesh.Load(makeMeshElem("invalid", ""));
+    ASSERT_EQ(1u, errors.size()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::ATTRIBUTE_INVALID, errors[0].Code());
+    EXPECT_NE(std::string::npos, errors[0].Message().find("assert_convex"));
+    EXPECT_EQ(sdf::ConvexAssertion::NONE, mesh.AssertConvex());
+  }
+
+  // Ignored with convex_decomposition: a warning that can be turned into an
+  // error by the parser config
+  {
+    sdf::Mesh mesh;
+    sdf::ParserConfig config;
+    config.SetWarningsPolicy(sdf::EnforcementPolicy::ERR);
+    sdf::Errors errors = mesh.Load(
+        makeMeshElem("warn", "convex_decomposition"), config);
+    ASSERT_EQ(1u, errors.size()) << errors;
+    EXPECT_EQ(sdf::ErrorCode::WARNING, errors[0].Code());
+    EXPECT_NE(std::string::npos,
+        errors[0].Message().find("convex_decomposition"));
+    // The value is still stored, consumers decide to ignore it
+    EXPECT_EQ(sdf::ConvexAssertion::WARN, mesh.AssertConvex());
+
+    // No warning without an assertion
+    sdf::Mesh mesh2;
+    errors = mesh2.Load(makeMeshElem("", "convex_decomposition"), config);
+    EXPECT_TRUE(errors.empty()) << errors;
+  }
 }
 
 /////////////////////////////////////////////////
@@ -380,6 +479,8 @@ TEST(DOMMesh, ToElement)
 
   EXPECT_EQ(mesh.OptimizationStr(), mesh2.OptimizationStr());
   EXPECT_EQ(mesh.Optimization(), mesh2.Optimization());
+  EXPECT_EQ(mesh.AssertConvexStr(), mesh2.AssertConvexStr());
+  EXPECT_EQ(sdf::ConvexAssertion::NONE, mesh2.AssertConvex());
   EXPECT_EQ(mesh.Uri(), mesh2.Uri());
   EXPECT_EQ(mesh.Scale(), mesh2.Scale());
   EXPECT_EQ(mesh.Submesh(), mesh2.Submesh());
@@ -409,6 +510,7 @@ TEST(DOMMesh, ToElementErrorOutput)
   sdf::Errors errors;
 
   EXPECT_TRUE(mesh.SetOptimization("convex_hull"));
+  EXPECT_TRUE(mesh.SetAssertConvex("error"));
   mesh.SetUri("mesh-uri");
   mesh.SetScale(gz::math::Vector3d(1, 2, 3));
   mesh.SetSubmesh("submesh");
@@ -424,6 +526,8 @@ TEST(DOMMesh, ToElementErrorOutput)
 
   EXPECT_EQ(mesh.OptimizationStr(), mesh2.OptimizationStr());
   EXPECT_EQ(mesh.Optimization(), mesh2.Optimization());
+  EXPECT_EQ(mesh.AssertConvexStr(), mesh2.AssertConvexStr());
+  EXPECT_EQ(sdf::ConvexAssertion::FAIL, mesh2.AssertConvex());
   EXPECT_EQ(nullptr, mesh2.ConvexDecomposition());
   EXPECT_EQ(mesh.Uri(), mesh2.Uri());
   EXPECT_EQ(mesh.Scale(), mesh2.Scale());
