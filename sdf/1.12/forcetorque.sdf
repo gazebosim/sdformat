@@ -24,14 +24,17 @@
     <element name="x" required="0">
       <description>Force along the X axis</description>
       <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
     </element>
     <element name="y" required="0">
       <description>Force along the Y axis</description>
       <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
     </element>
     <element name="z" required="0">
       <description>Force along the Z axis</description>
       <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
     </element>
   </element>
 
@@ -41,14 +44,17 @@
     <element name="x" required="0">
       <description>Torque about the X axis</description>
       <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
     </element>
     <element name="y" required="0">
       <description>Force about the Y axis</description>
       <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
     </element>
     <element name="z" required="0">
       <description>Torque about the Z axis</description>
       <include filename="noise.sdf" required="0"/>
+    <include filename="range.sdf" required="0"/>
     </element>
   </element>
 </element>
