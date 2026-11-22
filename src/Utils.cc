@@ -110,59 +110,65 @@ void enforceConfigurablePolicyCondition(
       _errors.push_back(_error);
       break;
     case EnforcementPolicy::WARN:
+    {
+      std::string msg;
       if (!_error.XmlPath().has_value())
       {
-        sdfwarn << _error.Message();
+        msg = _error.Message();
       }
       else if (!_error.FilePath().has_value())
       {
-        sdfwarn
-            << "[" << _error.XmlPath().value()
-            << "]: " << _error.Message();
+        msg = "[" + _error.XmlPath().value() + "]: " + _error.Message();
       }
       else if (!_error.LineNumber().has_value())
       {
-        sdfwarn
-            << "[" << _error.XmlPath().value()
-            << ":" << _error.FilePath().value()
-            << "]: " << _error.Message();
+        msg = "[" + _error.XmlPath().value() + ":" +
+            _error.FilePath().value() + "]: " + _error.Message();
       }
       else
       {
-        sdfwarn
-            << "[" << _error.XmlPath().value()
-            << ":" << _error.FilePath().value()
-            << ":L" << _error.LineNumber().value()
-            << "]: " << _error.Message();
+        msg = "[" + _error.XmlPath().value() + ":" +
+            _error.FilePath().value() + ":L" +
+            std::to_string(_error.LineNumber().value()) + "]: " +
+            _error.Message();
       }
+      // End the line if the message does not, otherwise consecutive
+      // warnings are printed on the same console line.
+      if (msg.empty() || msg.back() != '\n')
+        msg += '\n';
+      sdfwarn << msg;
       break;
+    }
     case EnforcementPolicy::LOG:
+    {
+      std::string msg;
       if (!_error.XmlPath().has_value())
       {
-        sdfdbg << _error.Message();
+        msg = _error.Message();
       }
       else if (!_error.FilePath().has_value())
       {
-        sdfdbg
-            << "[" << _error.XmlPath().value()
-            << "]: " << _error.Message();
+        msg = "[" + _error.XmlPath().value() + "]: " + _error.Message();
       }
       else if (!_error.LineNumber().has_value())
       {
-        sdfdbg
-            << "[" << _error.XmlPath().value()
-            << ":" << _error.FilePath().value()
-            << "]: " << _error.Message();
+        msg = "[" + _error.XmlPath().value() + ":" +
+            _error.FilePath().value() + "]: " + _error.Message();
       }
       else
       {
-        sdfdbg
-            << "[" << _error.XmlPath().value()
-            << ":" << _error.FilePath().value()
-            << ":L" << _error.LineNumber().value()
-            << "]: " << _error.Message();
+        msg = "[" + _error.XmlPath().value() + ":" +
+            _error.FilePath().value() + ":L" +
+            std::to_string(_error.LineNumber().value()) + "]: " +
+            _error.Message();
       }
+      // End the line if the message does not, otherwise consecutive
+      // messages are printed on the same console line.
+      if (msg.empty() || msg.back() != '\n')
+        msg += '\n';
+      sdfdbg << msg;
       break;
+    }
     default:
       throw std::runtime_error("Unhandled warning policy enum value");
   }
