@@ -117,4 +117,22 @@
   <element name="enable_orientation" type="bool" default="true" required="0">
     <description>Some IMU sensors rely on external filters to produce orientation estimates. True to generate and output orientation data, false to disable orientation data generation.</description>
   </element>
+
+  <element name="orientation" required="0">
+    <description>These elements are specific to body-frame orientation,
+    which is expressed in radians</description>
+    <element name="x" required="0">
+      <description>Orientation about X-axis (Roll)</description>
+      <include filename="noise.sdf" required="0"/>
+    </element>
+    <element name="y" required="0">
+      <description>Orientation about Y-axis (Pitch)</description>
+      <include filename="noise.sdf" required="0"/>
+    </element>
+    <element name="z" required="0">
+      <description>Orientation about Z-axis (Yaw)</description>
+      <include filename="noise.sdf" required="0"/>
+    </element>
+  </element>
+
 </element>

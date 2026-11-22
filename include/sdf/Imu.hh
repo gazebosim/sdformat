@@ -109,6 +109,36 @@ namespace sdf
     /// \param[in] _noise Noise values for the Z-axis angular velocity.
     public: void SetAngularVelocityZNoise(const Noise &_noise);
 
+    /// \brief Get the noise values related to the body-frame orientation
+    /// on the X-axis (Roll).
+    /// \return Noise values for the X-axis orientation.
+    public: const Noise &OrientationXNoise() const;
+
+    /// \brief Set the noise values related to the body-frame orientation
+    /// on the X-axis (Roll).
+    /// \param[in] _noise Noise values for the X-axis orientation.
+    public: void SetOrientationXNoise(const Noise &_noise) ;
+
+    /// \brief Get the noise values related to the body-frame orientation
+    /// on the Y-axis (Pitch).
+    /// \return Noise values for the Y-axis orientation.
+    public: const Noise &OrientationYNoise() const;
+
+    /// \brief Set the noise values related to the body-frame orientation
+    /// on the Y-axis (Pitch).
+    /// \param[in] _noise Noise values for the Y-axis orientation.
+    public: void SetOrientationYNoise(const Noise &_noise) ;
+
+    /// \brief Get the noise values related to the body-frame orientation
+    /// on the Z-axis (Yaw).
+    /// \return Noise values for the Z-axis orientation.
+    public: const Noise &OrientationZNoise() const;
+
+    /// \brief Set the noise values related to the body-frame orientation
+    /// on the Z-axis (Yaw).
+    /// \param[in] _noise Noise values for the Z-axis orientation.
+    public: void SetOrientationZNoise(const Noise &_noise) ;
+
     /// \brief Used when localization is set to GRAV_UP or GRAV_DOWN, a
     /// projection of this vector into a plane that is orthogonal to the
     /// gravity vector defines the direction of the IMU reference frame's
