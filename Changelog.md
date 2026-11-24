@@ -1,5 +1,64 @@
 ## libsdformat 15.X
 
+### libsdformat 15.5.0 (2026-11-23)
+
+1. Add bazel cc_binary target for gz-sdf executable
+    * [Pull request #1738](https://github.com/gazebosim/sdformat/pull/1738)
+
+1. Use the SPDX identifier Apache-2.0 in the license declaration
+    * [Pull request #1723](https://github.com/gazebosim/sdformat/pull/1723)
+
+1. cmake: Search Development.Module Python component to compile Python bindings
+    * [Pull request #1707](https://github.com/gazebosim/sdformat/pull/1707)
+
+1. Switch to homebrew/actions@main in macOS github actions
+    * [Pull request #1714](https://github.com/gazebosim/sdformat/pull/1714)
+
+1. Update BCR maintainers
+    * [Pull request #1711](https://github.com/gazebosim/sdformat/pull/1711)
+
+1. use clang for bazel ci build (#1706)
+    * [Pull request #1706](https://github.com/gazebosim/sdformat/pull/1706)
+    * [Pull request #1709](https://github.com/gazebosim/sdformat/pull/1709)
+
+1. Fix bazel build with clang
+    * [Pull request #1581](https://github.com/gazebosim/sdformat/pull/1581)
+
+1. Return identity directly when resolving a frame against itself
+    * [Pull request #1693](https://github.com/gazebosim/sdformat/pull/1693)
+
+1. [bazel/infra] Automate publish to BCR workflow (#1686)
+    * [Pull request #1686](https://github.com/gazebosim/sdformat/pull/1686)
+    * [Pull request #1688](https://github.com/gazebosim/sdformat/pull/1688)
+
+1. [bazel/infra] Update bazel CI to use workflow v7.7.0
+    * [Pull request #1683](https://github.com/gazebosim/sdformat/pull/1683)
+
+1. macos CI: test on push to release branches only
+    * [Pull request #1672](https://github.com/gazebosim/sdformat/pull/1672)
+
+1. Backport load optimization without deprecation
+    * [Pull request #1664](https://github.com/gazebosim/sdformat/pull/1664)
+
+1. macos CI: use brew trust
+    * [Pull request #1666](https://github.com/gazebosim/sdformat/pull/1666)
+
+1. NavSat::ToElement() method
+    * [Pull request #1585](https://github.com/gazebosim/sdformat/pull/1585)
+
+1. Fix Python test PYTHONPATH: use ENVIRONMENT_MODIFICATION instead of ENVIRONMENT
+    * [Pull request #1649](https://github.com/gazebosim/sdformat/pull/1649)
+
+1. Parse category bitmask SDF element in Surface DOM
+    * [Pull request #1630](https://github.com/gazebosim/sdformat/pull/1630)
+
+1. Fix static_cast that triggers compile errors with -Wpedantic
+    * [Pull request #1632](https://github.com/gazebosim/sdformat/pull/1632)
+
+1. Use std::vector::reserve in Element::Clone (#1480)
+    * [Pull request #1480](https://github.com/gazebosim/sdformat/pull/1480)
+    * [Pull request #1628](https://github.com/gazebosim/sdformat/pull/1628)
+
 ### libsdformat 15.4.0 (2026-01-29)
 
 1. Introduce a cache to improve performance of construction of SDFormat
