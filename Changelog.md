@@ -1,6 +1,6 @@
 ## libsdformat 15.X
 
-### libsdformat 15.5.0 (2026-11-23)
+### libsdformat 15.5.0 (2026-11-24)
 
 1. Add bazel cc_binary target for gz-sdf executable
     * [Pull request #1738](https://github.com/gazebosim/sdformat/pull/1738)
